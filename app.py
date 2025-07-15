@@ -214,13 +214,9 @@ with col1:
     st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown("## 📊 Resumo Semanal de Boletos")
+    st.markdown("## 📊 Resumo Semanal de Boletos")  # Título separado da imagem
 
-    # Botão para limpar cache manualmente
-    if st.button("🔄 Atualizar agora"):
-        st.cache_data.clear()
-
-    # Removi o filtro por descrição conforme pedido (não aparece mais)
+    filtro = st.text_input("🔍 Filtro por descrição")
 
     # Funções para feriados, dados e limites seguem iguais
     FERIADOS_FIXOS = {(1,1),(21,4),(1,5),(7,9),(12,10),(2,11),(15,11),(20,11),(25,12),(15,7),(8,9)}
@@ -302,7 +298,8 @@ with col2:
         d_ajustado = proximo_dia_util(d)
         if d_ajustado.month != mes_index:
             continue
-
+        if filtro.lower() not in desc.lower():
+            continue
         resumo[d_ajustado] += float(valor)
         detalhes[d_ajustado].append(desc)
 
@@ -348,12 +345,15 @@ with col2:
         cor = "#0f0" if total_semana <= limite else "#f33"
         st.markdown(f"<div class='week-total'><b>💵 Semana {i} — Total: <span style='color:{cor}'>R$ {total_semana:,.2f}</span> | Limite: R$ {limite:,.2f}</b></div>", unsafe_allow_html=True)
 
-    # Inputs para alterar limites
-    st.markdown("---")
-    st.markdown("### Ajustar Limites Semanais")
-    for i in range(1, len(semanas)+1):
-        limite_atual = limites.get(i, 0.0)
-        novo_limite = st.number_input(f"Limite Semana {i}", min_value=0.0, value=limite_atual, step=10.0, format="%.2f", key=f"limite_{i}")
-        if st.button(f"Salvar Limite Semana {i}", key=f"btn_salvar_{i}"):
-            salvar_limite(ano, mes_index, i, novo_limite)
-            st.success(f"Limite da Semana {i} atualizado para R$ {novo_limite:.2f}")
+    with st.expander("⚙ Editar Limites Semanais"):
+        with st.form(key="form_limites_totais"):
+            limites_novos = {}
+            for i in range(1, len(semanas)+1):
+                limite_atual = limites.get(i, 0.0)
+                limite_novo = st.number_input(f"Novo limite semana {i}", value=float(limite_atual), key=f"limite_{ano}{mes_index}{i}")
+                limites_novos[i] = limite_novo
+            submit = st.form_submit_button("Salvar todos limites")
+            if submit:
+                for i, val in limites_novos.items():
+                    salvar_limite(ano, mes_index, i, val)
+                st.success("Limites semanais salvos com sucesso!")
