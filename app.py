@@ -216,9 +216,7 @@ with col1:
 with col2:
     st.markdown("## 📊 Resumo Semanal de Boletos")  # Título separado da imagem
 
-    # Botão para atualizar (limpar cache)
-    if st.button("🔄 Atualizar agora"):
-        st.cache_data.clear()
+    filtro = st.text_input("🔍 Filtro por descrição")
 
     # Funções para feriados, dados e limites seguem iguais
     FERIADOS_FIXOS = {(1,1),(21,4),(1,5),(7,9),(12,10),(2,11),(15,11),(20,11),(25,12),(15,7),(8,9)}
@@ -300,7 +298,8 @@ with col2:
         d_ajustado = proximo_dia_util(d)
         if d_ajustado.month != mes_index:
             continue
-        # Filtro removido: não faz mais nada com descrição
+        if filtro.lower() not in desc.lower():
+            continue
         resumo[d_ajustado] += float(valor)
         detalhes[d_ajustado].append(desc)
 
@@ -308,6 +307,7 @@ with col2:
     semanas = calendar.Calendar(firstweekday=6).monthdatescalendar(ano, mes_index)
     dias_semana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
 
+    # Cabeçalho dos dias da semana alinhado com o calendário
     header_cols = st.columns(7)
     for idx, dia in enumerate(dias_semana):
         with header_cols[idx]:
@@ -330,21 +330,30 @@ with col2:
             elif valor_dia > 0:
                 style += " status-pendente"
 
+            if dia.month == mes_index:
+                texto_html = (
+                    f"<div class='day-number'>{dia.day}</div>"
+                    f"<div class='day-value'>R$ {valor_dia:,.2f}</div>"
+                )
+            else:
+                texto_html = ""
+
             with cols[idx]:
-                if dia.month == mes_index:
-                    st.markdown(f"<div class='{style}'>"
-                                f"<div class='day-number'>{dia.day}</div>"
-                                f"<div class='day-value'>R$ {valor_dia:,.2f}</div>"
-                                f"</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown("<div style='margin:5px; height:75px'></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='{style}'>{texto_html}</div>", unsafe_allow_html=True)
 
-        # Mostrar o total semanal e input para limite (para editar limites semanais)
-        limite_atual = limites.get(i, 0)
-        limite_novo = st.number_input(f"Limite Semana {i}", min_value=0.0, value=float(limite_atual), step=100.0, format="%.2f", key=f"limite_{i}")
+        limite = limites.get(i, 0.0)
+        cor = "#0f0" if total_semana <= limite else "#f33"
+        st.markdown(f"<div class='week-total'><b>💵 Semana {i} — Total: <span style='color:{cor}'>R$ {total_semana:,.2f}</span> | Limite: R$ {limite:,.2f}</b></div>", unsafe_allow_html=True)
 
-        if limite_novo != limite_atual:
-            salvar_limite(ano, mes_index, i, limite_novo)
-            limites[i] = limite_novo
-
-        st.markdown(f"<div class='week-total'><b>Total Semana {i}:</b> R$ {total_semana:,.2f}</div>", unsafe_allow_html=True)
+    with st.expander("⚙ Editar Limites Semanais"):
+        with st.form(key="form_limites_totais"):
+            limites_novos = {}
+            for i in range(1, len(semanas)+1):
+                limite_atual = limites.get(i, 0.0)
+                limite_novo = st.number_input(f"Novo limite semana {i}", value=float(limite_atual), key=f"limite_{ano}{mes_index}{i}")
+                limites_novos[i] = limite_novo
+            submit = st.form_submit_button("Salvar todos limites")
+            if submit:
+                for i, val in limites_novos.items():
+                    salvar_limite(ano, mes_index, i, val)
+                st.success("Limites semanais salvos com sucesso!")
