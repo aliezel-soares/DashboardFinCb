@@ -51,10 +51,29 @@ style_css = """
 }
 
 /* Status claro */
-.status-hoje { border: 3px solid #d1b000; font-weight: bold; }
+.status-hoje {
+  border: 3px solid transparent;
+  border-image: linear-gradient(90deg, rgba(38,255,0,1), rgba(31,148,3,1), rgba(38,255,0,1));
+  border-image-slice: 1;
+  font-weight: bold;
+  box-shadow: 0 0 10px 2px rgba(38, 255, 0, 0.6); /* glow verde */
+}
 .status-fds { background-color: #a9cce3; }
-.status-feriado { background-color: #f5b7b1; color: #5a2a27; font-weight: bold; }
-.status-pendente { box-shadow: 0 0 6px 2px #3399ff; }
+.status-feriado {
+  background-color: #f5b7b1;
+  color: #5a2a27;
+  font-weight: bold;
+}
+.status-pendente {
+  border: 3px solid;
+  border-image-slice: 1;
+  border-width: 3px;
+  border-image-source: linear-gradient(0deg, rgba(255, 247, 0, 1) 0%, rgba(250, 171, 0, 1) 100%);
+  background-color: transparent; /* fundo transparente */
+  color: #0077ff; /* cor do texto para legibilidade */
+  font-weight: bold;
+  box-shadow: 0 0 8px 2px rgba(255, 193, 7, 0.7); /* brilho dourado */
+}
 
 /* Totais */
 .week-total {
@@ -118,10 +137,25 @@ div[role="radiogroup"] > label[data-selected="true"] {
   }
 
   /* Status escuro */
-  .status-hoje { border: 3px solid #ffee00; font-weight: bold; }
+  .status-hoje {
+  border: 3px solid transparent;
+  border-image: linear-gradient(90deg, rgba(38,255,0,1), rgba(31,148,3,1), rgba(38,255,0,1));
+  border-image-slice: 1;
+  font-weight: bold;
+  box-shadow: 0 0 10px 2px rgba(38, 255, 0, 0.6); /* glow verde */
+}
   .status-fds { background-color: #001f3f; }
   .status-feriado { background-color: #ff6f91; color: white; font-weight: bold; }
-  .status-pendente { box-shadow: 0 0 6px 2px #0077ff; }
+  .status-pendente {
+  border: 3px solid;
+  border-image-slice: 1;
+  border-width: 3px;
+  border-image-source: linear-gradient(0deg, rgba(255, 247, 0, 1) 0%, rgba(250, 171, 0, 1) 100%);
+  background-color: transparent; /* fundo transparente */
+  color: #0077ff; /* cor do texto para legibilidade */
+  font-weight: bold;
+  box-shadow: 0 0 8px 2px rgba(255, 193, 7, 0.7); /* brilho dourado */
+}
 
   .week-total {
     color: #ccc;
@@ -166,7 +200,7 @@ with col1:
     
     # Coloca a imagem dentro de um container com margem customizada para subir
     st.markdown("<div class='sidebar-logo-container'>", unsafe_allow_html=True)
-    st.image("logo/LOGO.JPG", use_container_width=True)
+    st.image("logo.png", width=300)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='sidebar-title'>Ano</div>", unsafe_allow_html=True)
@@ -309,7 +343,7 @@ with col2:
 
         limite = limites.get(i, 0.0)
         cor = "#0f0" if total_semana <= limite else "#f33"
-        st.markdown(f"<div class='week-total'>💵 Semana {i} — Total: <b style='color:{cor}'>R$ {total_semana:,.2f}</b> | Limite: R$ {limite:,.2f}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='week-total'><b>💵 Semana {i} — Total: <span style='color:{cor}'>R$ {total_semana:,.2f}</span> | Limite: R$ {limite:,.2f}</b></div>", unsafe_allow_html=True)
 
     with st.expander("⚙ Editar Limites Semanais"):
         with st.form(key="form_limites_totais"):
