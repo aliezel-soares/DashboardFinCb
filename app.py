@@ -255,7 +255,7 @@ with col2:
             d += timedelta(days=1)
         return d
 
-    @st.cache_data(ttl=10)
+    #@st.cache_data(ttl=10)
     def obter_dados():
         conn = psycopg2.connect(DB_URL)
         cursor = conn.cursor()
@@ -264,7 +264,7 @@ with col2:
         conn.close()
         return dados
 
-    @st.cache_data(ttl=10)
+    #@st.cache_data(ttl=10)
     def obter_limites(ano, mes):
         conn = psycopg2.connect(DB_URL)
         cursor = conn.cursor()
