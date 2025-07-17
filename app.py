@@ -1,7 +1,7 @@
 import streamlit as st
 import calendar
 from datetime import datetime, timedelta, date
-import psycopg2
+import psycopg
 from collections import defaultdict
 
 # Banco de dados
