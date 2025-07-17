@@ -257,7 +257,7 @@ with col2:
 
     @st.cache_data(ttl=10)
     def obter_dados():
-        conn = psycopg2.connect(DB_URL)
+        conn = psycopg.connect(DB_URL)
         cursor = conn.cursor()
         cursor.execute("SELECT descricao, data, valor FROM lancamentos WHERE status='pendente'")
         dados = cursor.fetchall()
@@ -266,7 +266,7 @@ with col2:
 
     @st.cache_data(ttl=10)
     def obter_limites(ano, mes):
-        conn = psycopg2.connect(DB_URL)
+        conn = psycopg.connect(DB_URL)
         cursor = conn.cursor()
         cursor.execute("SELECT semana, limite FROM limites_semanais WHERE ano=%s AND mes=%s", (ano, mes))
         res = cursor.fetchall()
@@ -274,7 +274,7 @@ with col2:
         return dict(res)
 
     def salvar_limite(ano, mes, semana, limite):
-        conn = psycopg2.connect(DB_URL)
+        conn = psycopg.connect(DB_URL)
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO limites_semanais (ano, mes, semana, limite)
