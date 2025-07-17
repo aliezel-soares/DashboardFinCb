@@ -2,5 +2,6 @@ services:
   - type: web
     name: meu-app-streamlit
     env: python
+    runtime: python-3.11.4
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
