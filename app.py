@@ -296,8 +296,6 @@ with col2:
         d_ajustado = proximo_dia_util(d)
         if d_ajustado.month != mes_index:
             continue
-        if filtro.lower() not in desc.lower():
-            continue
         resumo[d_ajustado] += float(valor)
         detalhes[d_ajustado].append(desc)
 
