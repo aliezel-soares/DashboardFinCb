@@ -216,8 +216,6 @@ with col1:
 with col2:
     st.markdown("## 📊 Resumo Semanal de Boletos")  # Título separado da imagem
 
-    filtro = st.text_input("🔍 Filtro por descrição")
-
     # Funções para feriados, dados e limites seguem iguais
     FERIADOS_FIXOS = {(1,1),(21,4),(1,5),(7,9),(12,10),(2,11),(15,11),(20,11),(25,12),(15,7),(8,9)}
 
